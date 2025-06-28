@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            overflow: hidden; /* Prevent scrollbars */
+        }
+        #mapid {
+            position: absolute;
+            top: 0;
+            bottom: 0;
+            right: 0;
+            left: 0;
+            height: 100%; /* Make map fill full height */
+            width: 100%; /* Make map fill full width */
+        }
+    </style>
+</head>
+<body>
+
+<div id="mapid"></div>
+
+<script>
+    var mymap = L.map('mapid').setView([31.9567, 34.8055], 13);
+
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+    }).addTo(mymap);
+
+    var filePath = 'polygon_coordinates.txt'; 
+
+    fetch(filePath)
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Network response was not ok ' + response.statusText);
+            }
+            return response.text();
+        })
+        .then(data => {
+            var polygonCoords = data.trim().split('\n').map(line => {
+                var parts = line.split(',');
+                return [parseFloat(parts[0]), parseFloat(parts[1])];
+            });
+
+            if (polygonCoords.length > 0) {
+                var polygon = L.polygon(polygonCoords, {
+                    color: 'blue',
+                    fillColor: '#ADD8E6',
+                    fillOpacity: 0.5
+                }).addTo(mymap);
+
+                mymap.fitBounds(polygon.getBounds());
+            } else {
+                console.warn('No coordinates found in the file.');
+            }
+        })
+        .catch(error => {
+            console.error('Error fetching or parsing coordinates:', error);
+            alert('Error loading coordinates: ' + error.message);
+        });
+</script>
+
+</body>
+</html>
