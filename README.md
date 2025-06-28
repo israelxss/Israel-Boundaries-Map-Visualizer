@@ -57,7 +57,7 @@ To view the interactive map, follow these simple steps:
     
 5.  **Navigate to the project directory** in your terminal or command prompt.
     
-6.  Bashpython -m http.server 8080
+6.  Bash `python -m http.server 8080`
     
 7.  **Open your web browser** and go to http://localhost:8080/index.html.
     
